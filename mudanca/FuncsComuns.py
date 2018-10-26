@@ -4,8 +4,8 @@ def TelaLogin(clasCli):
         senha = input("Senha: ")
         dados = login + ":" + senha
         clasCli.enviarRequisicao(dados)
-        data = clasCli.recebeResposta()
-        print(data)
-        if data == "Achei":
-            print(clasCli.recebeResposta())
+        data = clasCli.recebeResposta() 
+        if data == ".":            
             return
+        else:
+            print(data)

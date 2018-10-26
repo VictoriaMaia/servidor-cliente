@@ -12,5 +12,5 @@ class ClienteSuper():
         #self.addrComunic = ('', 0)
 
     def toString(self):
-        print(self.nome + " : " + self.contato + " : " + self.login + " : " + self.senha + " : " + self.tipoCliente)
+        return ("nome: " + self.nome + "; Contato: " + self.contato + "; Login: " + self.login + "; Senha: " + self.senha)
 
