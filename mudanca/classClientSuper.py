@@ -14,3 +14,11 @@ class ClienteSuper():
     def toString(self):
         return ("nome: " + self.nome + "; Contato: " + self.contato + "; Login: " + self.login + "; Senha: " + self.senha)
 
+    def setLogin(self, newLogin):
+        self.login = newLogin
+
+    def setSenha(self, newSenha):
+        self.senha = newSenha
+    
+    def setContato(self, newContato):
+        self.contato = newContato

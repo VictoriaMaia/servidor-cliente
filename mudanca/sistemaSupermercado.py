@@ -1,4 +1,5 @@
 import time
+from classProduto import Produto
 from classServer import Server
 from classClientSuper import ClienteSuper
 
@@ -7,8 +8,8 @@ class Sistema():
         #banco de dados
         self.listaUsuario = [] #fazer a classe usuário
         self.listaUsuario.append(ClienteSuper("Administrador", "...", "admin", "admin", "0"))
+        self.listaProdutos = []
         self.S = Server()
-        #tem também os produtos, mas vamos com calma, primeiro ver se funciona
 
 ##########     TELA INICIAL     ##########
     def GerenciaLogin(self, sockCli):
@@ -36,7 +37,7 @@ class Sistema():
             msgErro = "Desculpe, login ou senha incorreta. Tente novamente \nSe esqueceu a senha, por favor contate um dos nossos atendentes\n\n"
             self.S.enviaRespostaRequisicao(sockCli, msgErro)
             
-        self.S.fecharConecServer(sockCli)
+        #self.S.fecharConecServer(sockCli)
 
 
 ##########     SUBSISTEMA FUNCIONARIO     ##########    
@@ -62,33 +63,84 @@ class Sistema():
             
             #### FECHAR CONEXÃO #### 
             if(operacao == "00"):
-                #self.S.fecharConecServer(funcionario.socketCliSuper)
+                self.S.fecharConecServer(funcionario.socketCliSuper)
                 break
             
+            
             #### ADICIONAR #### 
+                #usuários
             if(operacao == "01" or operacao == "03"): 
                 self.listaUsuario.append(ClienteSuper(infD[0], infD[1], infD[2], infD[3], infD[4]))
                 self.S.enviaRespostaRequisicao(funcionario.socketCliSuper, "Cadastro feito com sucesso")            
             
+                #produtos
+            if(operacao == "02"):
+                self.listaProdutos.append(Produto(infD[0], infD[1], infD[2], infD[3]))
+                self.S.enviaRespostaRequisicao(funcionario.socketCliSuper, "Cadastro feito com sucesso")
+
             #### MODIFICAR ####
+                #usuários
             # 04x!modificado:pessoa  -> infD[0] = modificado e infD[1] = pessoa
-            elif(operacao == "041"): #login
-                for cli in self.listaUsuario:
-                    if (cli.nome == infD[1]):
-                        cli.login = infD[0]
-                        cli.toString()
-                        self.S.enviaRespostaRequisicao(funcionario.socketCliSuper, "Modificação feita com sucesso")
-                        break
-                self.S.enviaRespostaRequisicao(funcionario.socketCliSuper, "Usuário não cadastrado")
+            elif(operacao == "04"):
+                achou = 0
+                for user in self.listaUsuario:
+                    if(user.nome == infD[0]):
+                        achou = 1
+                        self.S.enviaRespostaRequisicao(funcionario.socketCliSuper, "1")
+                        while True:
+                            novaRequisicao = self.S.recebeRequisicao(funcionario.socketCliSuper)
+                            infos = novaRequisicao.split('!')
+                            novaOperacao = infos[0]
+                            novosDados = infos[1]    
+                            print(novaOperacao)                    
+                            #infDadosnovos = novosDados.split(':')
+                            if(novaOperacao == "041"): #login
+                                user.setLogin(novosDados)
+                                user.toString()
+                                self.S.enviaRespostaRequisicao(funcionario.socketCliSuper, "Modificação feita com sucesso")
+                                
+                            elif(novaOperacao == "042"): #senha
+                                user.setSenha(novosDados)
+                                self.S.enviaRespostaRequisicao(funcionario.socketCliSuper, "Modificação feita com sucesso")
+                                
+                            elif(novaOperacao == "043"): #contato
+                                user.setContato(novosDados)
+                                self.S.enviaRespostaRequisicao(funcionario.socketCliSuper, "Modificação feita com sucesso")
+                            
+                            elif(novaOperacao == "00"):
+                                break
+
+                if(achou == 0):
+                    self.S.enviaRespostaRequisicao(funcionario.socketCliSuper, "0")
                 
-            elif(operacao == "042"): #senha
-                for cli in self.listaUsuario:
-                    if (cli.nome == infD[1]):
-                        cli.senha = infD[0]
-                        cli.toString()
-                        self.S.enviaRespostaRequisicao(funcionario.socketCliSuper, "Modificação feita com sucesso")
-                        break
-                    self.S.enviaRespostaRequisicao(funcionario.socketCliSuper, "Usuário não cadastrado")
+            #produtos
+            elif(operacao == "05"):
+                achou = 0
+                for prod in self.listaProdutos:
+                    if(prod.id == infD[0]):
+                        achou = 1
+                        self.S.enviaRespostaRequisicao(funcionario.socketCliSuper, "1")
+                        while True:
+                            novaRequisicao = self.S.recebeRequisicao(funcionario.socketCliSuper)
+                            infos = novaRequisicao.split('!')
+                            novaOperacao = infos[0]
+                            novosDados = infos[1]                        
+                            infDadosnovos = novosDados.split(':')
+                            if(novaOperacao == "051"):
+                                #quantidade
+                                prod.setQuantidade(infDadosnovos[0])
+                                self.S.enviaRespostaRequisicao(funcionario.socketCliSuper, "Modificação feita com sucesso")
+                            elif(novaOperacao == "052"):
+                                #preço
+                                prod.setPreco(infDadosnovos[0])
+                                self.S.enviaRespostaRequisicao(funcionario.socketCliSuper, "Modificação feita com sucesso")
+                            
+                            elif(novaOperacao == "00"):
+                                break
+                
+                if(achou == 0):
+                    self.S.enviaRespostaRequisicao(funcionario.socketCliSuper, "0")
+
 
             #### REMOVER ####
             elif(operacao == "06"):
@@ -102,13 +154,31 @@ class Sistema():
                 if achou == 0:
                     self.S.enviaRespostaRequisicao(funcionario.socketCliSuper, "Usuário não cadastrado")
             
+            elif(operacao == "08"):
+                achou = 0
+                for prod in self.listaProdutos:
+                    if(prod.id == infD[0]):
+                        achou = 1
+                        self.listaProdutos.remove(prod)
+                        self.S.enviaRespostaRequisicao(funcionario.socketCliSuper, "Produto removido com sucesso")
+                        break
+                if achou == 0:
+                    self.S.enviaRespostaRequisicao(funcionario.socketCliSuper, "Produto não cadastrado")
+            
 
             #### MOSTRAR ####
+                #usuários
             elif(operacao == "09"):
                 self.mostratodos(infD[0], funcionario.socketCliSuper)
-            
+                
+                #produtos
+            elif(operacao == "11"):
+                for p in self.listaProdutos:
+                    self.S.enviaRespostaRequisicao(funcionario.socketCliSuper, p.toString())
+                time.sleep(1)
+                self.S.enviaRespostaRequisicao(funcionario.socketCliSuper, "acabou")
 
-            
+                
         return 
         
 
