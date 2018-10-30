@@ -218,6 +218,6 @@ class Sistema():
                 self.S.enviaRespostaRequisicao(comprador.socketCliSuper, "Produto não cadastrado")
             
 
-        for prod in compra.listaprodutos:
+        for prod in self.listaProdutos:
             print(prod.toString())
         return
