@@ -70,7 +70,6 @@ if __name__ == "__main__":
             print(cli.recebeResposta())
         
         elif(op == "04"):
-            #verificar se a pessoa existe antes de perguntar o que deseja alterar!
             alterarPess = input("Digite o nome do usuário que deseja alterar as informações: ")
             requisicao = "04!" + alterarPess
             cli.enviarRequisicao(requisicao)

@@ -12,7 +12,7 @@ class ClienteSuper():
         #self.addrComunic = ('', 0)
 
     def toString(self):
-        return ("nome: " + self.nome + "; Contato: " + self.contato + "; Login: " + self.login + "; Senha: " + self.senha)
+        return ("nome: " + self.nome + "; Contato: " + self.contato + "; Login: " + self.login + "; Senha: " + self.senha + "\n")
 
     def setLogin(self, newLogin):
         self.login = newLogin

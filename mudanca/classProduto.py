@@ -12,4 +12,7 @@ class Produto():
         self.preco = preco
 
     def toString(self):
-        return ("Id: " + self.id + " ;Nome: " + self.nome + " ;Quant: " + self.quantidade + " ;Preço: " + self.preco)
+        return ("Id: " + self.id + " ;Nome: " + self.nome + " ;Quant: " + self.quantidade + " ;Preço: " + self.preco + "\n")
+    
+    def toStringCompra(self):
+        return ("Id: " + self.id + " ;Nome: " + self.nome + " ;Preço: " + self.preco + "\n")

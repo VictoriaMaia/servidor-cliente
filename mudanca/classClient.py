@@ -12,7 +12,7 @@ class Cliente():
         self.socketClient.send(msg.encode())
 
     def recebeResposta(self):
-        return self.socketClient.recv(1024).decode()
+        return self.socketClient.recv(2048).decode()
 
     def fechaConexao(self):
         self.socketClient.close()

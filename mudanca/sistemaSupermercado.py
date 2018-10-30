@@ -1,4 +1,5 @@
 import time
+from classCompra import Compra
 from classProduto import Produto
 from classServer import Server
 from classClientSuper import ClienteSuper
@@ -7,9 +8,11 @@ class Sistema():
     def __init__(self):
         #banco de dados
         self.listaUsuario = [] #fazer a classe usuário
-        self.listaUsuario.append(ClienteSuper("Administrador", "...", "admin", "admin", "0"))
         self.listaProdutos = []
         self.S = Server()
+        self.listaUsuario.append(ClienteSuper("Administrador", "...", "admin", "admin", "0"))
+        self.listaUsuario.append(ClienteSuper("Lucas", "...","lu", "cas", "1"))
+        self.listaProdutos.append(Produto("001", "Bolacha", 3, "10.00"))
 
 ##########     TELA INICIAL     ##########
     def GerenciaLogin(self, sockCli):
@@ -24,20 +27,21 @@ class Sistema():
             print("recebi: " + login + " : " + senha)
             for cli in self.listaUsuario:
                 if login == cli.login and senha == cli.senha:
+                    achou = 1
                     self.S.enviaRespostaRequisicao(sockCli, ".")
                     time.sleep(1)
                     cli.socketCliSuper = sockCli
                     if cli.tipoCliente == "0":  #subsistema FUNCIONARIO                      
                         self.SystemFunc(cli)
-                    #if cli.tipoCliente == 1: #subsistema CARRINHO
-                    achou = 1
+                    if cli.tipoCliente == "1":  #subsistema CARRINHO
+                        self.SystemCar(cli)
                     break
             if achou == 1:
                 break
             msgErro = "Desculpe, login ou senha incorreta. Tente novamente \nSe esqueceu a senha, por favor contate um dos nossos atendentes\n\n"
             self.S.enviaRespostaRequisicao(sockCli, msgErro)
             
-        #self.S.fecharConecServer(sockCli)
+        self.S.fecharConecServer(sockCli)
 
 
 ##########     SUBSISTEMA FUNCIONARIO     ##########    
@@ -63,7 +67,7 @@ class Sistema():
             
             #### FECHAR CONEXÃO #### 
             if(operacao == "00"):
-                self.S.fecharConecServer(funcionario.socketCliSuper)
+                #self.S.fecharConecServer(funcionario.socketCliSuper)
                 break
             
             
@@ -184,4 +188,36 @@ class Sistema():
 
 
 ##########     SUBSISTEMA CARRINHO     ##########
-    #def SystemCar(self)
+    def alterarQuantidade(self, produto):
+        for p in self.listaProdutos:
+            if p.id == produto.id:
+                p.setQuantidade(p.quantidade-1)
+                break
+
+
+    def SystemCar(self, comprador):
+        msgInit = "Olá " + comprador.nome
+        self.S.enviaRespostaRequisicao(comprador.socketCliSuper, msgInit)
+        compra = Compra()
+        while True:
+            achou = 0
+            produto = self.S.recebeRequisicao(comprador.socketCliSuper)
+            if produto == "sair": 
+                for prod in compra.listaprodutos:
+                    print(prod.toStringCompra())
+                    self.alterarQuantidade(prod)
+                print(compra.total)    
+                break
+            for p in self.listaProdutos:
+                if p.id == produto:
+                    achou = 1
+                    compra.inserirProduto(p)
+                    msgCompra = p.nome + " R$: " + p.preco
+                    self.S.enviaRespostaRequisicao(comprador.socketCliSuper, msgCompra)
+            if achou == 0:
+                self.S.enviaRespostaRequisicao(comprador.socketCliSuper, "Produto não cadastrado")
+            
+
+        for prod in compra.listaprodutos:
+            print(prod.toString())
+        return

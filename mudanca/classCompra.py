@@ -7,7 +7,10 @@ class Compra():
     
     def inserirProduto(self, produto):
         self.listaprodutos.append(produto)
-        self.total = self.total + produto.preco
+        self.total = self.total + float(produto.preco)
+
+    #def mostrarCompra(self)
+    
 
     # def removerProduto(self, produto):
     #     self.listaprodutos.
