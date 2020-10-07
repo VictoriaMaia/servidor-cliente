@@ -6,7 +6,7 @@ O trabalho Just Take consiste em um sistema embarcado a ser implantado nos carri
   - Adicionar/Retirar os produtos identificados da lista de compras do usuário
   - Somar o valor total de preços da lista de compras
  
-Os produtos são identificados através do QrCode. O algoritmo de identificação foi desenvolvido por João Paulo Ferreira Soares [https://github.com/JoaoPaulo-Ferreira/CompVision_JustTake].
+Os produtos são identificados através do QrCode. O algoritmo de identificação foi desenvolvido por [João Paulo Ferreira Soares](https://github.com/JoaoPaulo-Ferreira/CompVision_JustTake).
 
 Este repositório contém o algoritmo:
   
